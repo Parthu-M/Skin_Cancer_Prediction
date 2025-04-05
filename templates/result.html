@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Cancer Classification Result</title>
+    <style>
+        /* Set the body to cover the entire viewport */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://www.mdanderson.org/content/mda/en/cancerwise/2022/08/who-is-at-increased-risk-for-skin-cancer/jcr:content/blog/adaptiveimage.resize.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        /* Main heading style */
+        h1 {
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 2.5em;
+            color: rgba(255, 0, 0, 0.9); /* Red bio-luminescent color */
+        }
+
+        /* Result container style */
+        .result-container {
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        /* Image style */
+        .result-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Prediction text style */
+        .prediction {
+            font-size: 1.5em;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        /* Probabilities table style */
+        .probabilities {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .probabilities th, .probabilities td {
+            padding: 10px;
+            border: 1px solid white;
+            color: white;
+        }
+
+        .probabilities th {
+            background-color: rgba(255, 0, 0, 0.7); /* Red bio-luminescent color */
+        }
+
+        /* Button style */
+        .back-button {
+            padding: 10px 20px;
+            background-color: rgba(255, 0, 0, 0.7); /* Button color */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 0, 0, 1); /* Button hover color */
+        }
+
+        /* Footer style */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        /* Team members style */
+        .team-info {
+            font-size: 0.9em;
+            color: black;
+            text-align: left;
+        }
+
+        .team-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Skin Cancer Classification Result</h1>
+
+    <div class="result-container">
+
+        <!-- Display the predicted class -->
+        <div class="prediction">
+            <strong>Predicted Class:</strong> {{ result.predicted_full }}
+        </div>
+
+        <!-- Display the probabilities in a table -->
+        <table class="probabilities">
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>Probability</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class_name, prob in result.class_probabilities.items() %}
+                <tr>
+                    <td>{{ class_name }}</td>
+                    <td>{{ prob }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Back button to upload another image -->
+        <button class="back-button" onclick="window.location.href='/'">Upload Another Image</button>
+    </div>
+
+    <footer>
+        <div class="team-info">
+            <p><b>21BIT0464 S. Navaneeth</b></p>
+            <p><b>Under Guide: Asis Kumar Tripathy sir</b></p>
+        </div>
+    </footer>
+
+</body>
+</html>

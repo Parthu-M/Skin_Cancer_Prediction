@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Cancer Classifier</title>
+    <style>
+        /* Set the body to cover the entire viewport */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://www.mdanderson.org/content/mda/en/cancerwise/2022/08/who-is-at-increased-risk-for-skin-cancer/jcr:content/blog/adaptiveimage.resize.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        /* Main heading style */
+        h1 {
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 2.5em;
+            color: rgba(255, 0, 0, 0.9); /* Red bio-luminescent color */
+        }
+
+        /* Form style */
+        form {
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for the form */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 300px;
+        }
+
+        /* File input style */
+        input[type="file"] {
+            color: aliceblue;
+        }
+
+        /* Button style */
+        button {
+            padding: 10px 20px;
+            background-color: rgba(255, 0, 0, 0.7); /* Button color */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: rgba(255, 0, 0, 1); /* Button hover color */
+        }
+
+        /* Footer style */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        /* Team members style */
+        .team-info {
+            font-size: 0.9em;
+            color: black;
+            text-align: left;
+        }
+
+        .team-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Skin Cancer Classification Test</h1>
+
+    <form method="POST" enctype="multipart/form-data" action="/upload">
+        <input type="file" name="file" accept="image/*" required>
+        <br><br>
+        <button type="submit">Upload and Predict</button>
+    </form>
+
+    <footer>
+        <div class="team-info">
+            <p><b>21BIT0464 S. Navaneeth</b></p>
+            <p><b>Under Guide: Asis Kumar Tripathy sir</b></p>
+        </div>
+    </footer>
+
+</body>
+</html>
