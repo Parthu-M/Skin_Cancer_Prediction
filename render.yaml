@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: dermalens-research-sandbox
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn --config gunicorn.conf.py app:app
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: WEB_CONCURRENCY
+        value: "2"
+      - key: WEB_THREADS
+        value: "4"
+      - key: LOG_LEVEL
+        value: INFO
