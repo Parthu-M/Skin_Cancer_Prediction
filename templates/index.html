@@ -1,107 +1,194 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skin Cancer Classifier</title>
-    <style>
-        /* Set the body to cover the entire viewport */
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-image: url('https://www.mdanderson.org/content/mda/en/cancerwise/2022/08/who-is-at-increased-risk-for-skin-cancer/jcr:content/blog/adaptiveimage.resize.jpg');
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-size: 100% 100%;
-            background-position: center;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A safe skin-lesion image readiness and machine-learning research workflow demonstration.">
+    <meta name="theme-color" content="#102a2b">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <title>Dermalens — ML image readiness lab</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 4c5.7 0 9 4.3 9 8s-3.3 8-9 8-9-4.3-9-8 3.3-8 9-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <span>DERMALENS<small>Research sandbox</small></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#workspace">Workspace</a>
+        <a href="#model-card">Model card</a>
+        <a class="source-link" href="https://github.com/Parthu-M/Skin_Cancer_Prediction">View source ↗</a>
+      </nav>
+    </header>
 
-        /* Main heading style */
-        h1 {
-            background-color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 2.5em;
-            color: rgba(255, 0, 0, 0.9); /* Red bio-luminescent color */
-        }
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Responsible computer vision</p>
+          <h1>Prepare the image.<br><em>Question the model.</em></h1>
+          <p>
+            A privacy-first workspace for validating skin-lesion imagery before
+            a research pipeline—without pretending an unavailable model can diagnose.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#workspace">Analyze an image</a>
+            <span class="safety-chip"><i></i> No diagnosis · no storage</span>
+          </div>
+        </div>
 
-        /* Form style */
-        form {
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for the form */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 300px;
-        }
+        <div class="hero-visual" aria-label="Abstract skin imaging research illustration">
+          <div class="scan-ring ring-one"></div>
+          <div class="scan-ring ring-two"></div>
+          <div class="lesion-map">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="coordinate x-axis"></div>
+          <div class="coordinate y-axis"></div>
+          <div class="visual-tag tag-one">RGB intake</div>
+          <div class="visual-tag tag-two">224 × 224</div>
+          <div class="visual-tag tag-three">Quality gate</div>
+          <div class="scan-caption">
+            <span>Input pipeline</span>
+            <strong>Input validated</strong>
+          </div>
+        </div>
+      </section>
 
-        /* File input style */
-        input[type="file"] {
-            color: aliceblue;
-        }
+      <section class="workspace-section" id="workspace" aria-labelledby="workspace-title">
+        <div class="section-intro">
+          <div>
+            <p class="eyebrow">Image readiness workspace</p>
+            <h2 id="workspace-title">Inspect before inference.</h2>
+          </div>
+          <p>Files are decoded in memory and discarded after analysis. No image is saved.</p>
+        </div>
 
-        /* Button style */
-        button {
-            padding: 10px 20px;
-            background-color: rgba(255, 0, 0, 0.7); /* Button color */
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+        <div class="workspace-grid">
+          <section class="upload-card" aria-labelledby="upload-title">
+            <div class="card-heading">
+              <span>01</span>
+              <div><h3 id="upload-title">Image intake</h3><p>JPEG, PNG, or WebP · maximum 8 MB</p></div>
+              <button id="sample-image-button" class="sample-button" type="button">Use synthetic sample</button>
+            </div>
 
-        button:hover {
-            background-color: rgba(255, 0, 0, 1); /* Button hover color */
-        }
+            <form id="analysis-form">
+              <label id="drop-zone" class="drop-zone" for="image-input">
+                <input id="image-input" name="image" type="file" accept="image/jpeg,image/png,image/webp" required>
+                <span class="upload-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5h14v-5"/></svg>
+                </span>
+                <strong>Drop an image here</strong>
+                <span>or choose a file from your device</span>
+                <small>Use a de-identified research image only</small>
+              </label>
 
-        /* Footer style */
-        footer {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: left;
-        }
+              <div id="file-preview" class="file-preview" hidden>
+                <img id="preview-image" alt="Preview of selected research image">
+                <div><strong id="preview-name"></strong><span id="preview-size"></span></div>
+                <button id="remove-file" type="button" aria-label="Remove selected image">×</button>
+              </div>
 
-        /* Team members style */
-        .team-info {
-            font-size: 0.9em;
-            color: black;
-            text-align: left;
-        }
+              <div class="consent-row">
+                <span aria-hidden="true">!</span>
+                <p><strong>Research use only.</strong> Do not upload identifying patient information.</p>
+              </div>
 
-        .team-info p {
-            margin: 5px 0;
-        }
-    </style>
-</head>
-<body>
+              <button id="analyze-button" class="submit-button" type="submit" disabled>
+                <span>Run readiness analysis</span><span aria-hidden="true">→</span>
+              </button>
+            </form>
+          </section>
 
-    <h1>Skin Cancer Classification Test</h1>
+          <section class="results-card" aria-labelledby="results-title">
+            <div class="card-heading">
+              <span>02</span>
+              <div><h3 id="results-title">Quality report</h3><p>Resolution · exposure · contrast · detail</p></div>
+            </div>
 
-    <form method="POST" enctype="multipart/form-data" action="/upload">
-        <input type="file" name="file" accept="image/*" required>
-        <br><br>
-        <button type="submit">Upload and Predict</button>
-    </form>
+            <div id="empty-results" class="empty-results">
+              <div class="report-glyph" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 20V8l8-4 8 4v12M8 13h8M8 17h5"/></svg>
+              </div>
+              <h4>No report yet</h4>
+              <p>Choose an image to see model-readiness checks and measurable image characteristics.</p>
+            </div>
+
+            <div id="loading-results" class="loading-results" hidden aria-live="polite">
+              <div class="loader"></div>
+              <p>Decoding and measuring the image…</p>
+            </div>
+
+            <div id="analysis-results" class="analysis-results" hidden aria-live="polite">
+              <div class="readiness-summary">
+                <span id="readiness-badge">Ready</span>
+                <strong><b id="passed-count">0</b> / 4 checks passed</strong>
+              </div>
+              <div id="check-list" class="check-list"></div>
+              <div class="metric-grid">
+                <div><span>Brightness</span><strong id="brightness-metric">—</strong></div>
+                <div><span>Contrast</span><strong id="contrast-metric">—</strong></div>
+                <div><span>Edge detail</span><strong id="edge-metric">—</strong></div>
+              </div>
+              <div class="inference-note">
+                <span aria-hidden="true">i</span>
+                <p><strong>No classification performed.</strong> Model weights are not distributed in this repository.</p>
+              </div>
+            </div>
+
+            <div id="error-results" class="error-results" hidden role="alert">
+              <strong>We could not analyze this image.</strong>
+              <p id="error-message">Choose another image and try again.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="model-section" id="model-card" aria-labelledby="model-title">
+        <div class="model-heading">
+          <div>
+            <p class="eyebrow">Model card</p>
+            <h2 id="model-title">A research pipeline,<br>with its limits visible.</h2>
+          </div>
+          <p>
+            The original experiment targeted seven HAM10000 lesion categories with
+            a Swin Transformer. Its trained weights and reproducible evaluation were
+            not included, so production inference remains intentionally disabled.
+          </p>
+        </div>
+
+        <div class="pipeline">
+          <article><span>01</span><div class="pipeline-icon">IMG</div><h3>Validated intake</h3><p>Content type, dimensions, decoding, and upload size are checked before processing.</p></article>
+          <article><span>02</span><div class="pipeline-icon">224</div><h3>Model preparation</h3><p>The documented research architecture expects normalized 224 × 224 RGB input.</p></article>
+          <article class="disabled"><span>03</span><div class="pipeline-icon">OFF</div><h3>Inference disabled</h3><p>No weights means no honest prediction. The application never fabricates a result.</p></article>
+        </div>
+
+        <div class="taxonomy">
+          <div>
+            <p class="eyebrow">Documented target taxonomy</p>
+            <h3>Seven research labels</h3>
+            <p>Listed for model documentation only—not presented as a diagnosis.</p>
+          </div>
+          <ul>
+            {% for item in model_card.classes %}
+              <li><span>{{ "%02d"|format(loop.index) }}</span><strong>{{ item.name }}</strong><code>{{ item.code }}</code></li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="medical-notice">
+          <span aria-hidden="true">!</span>
+          <div><strong>Not a medical device</strong><p>For concerns about a skin lesion, consult a qualified healthcare professional. Do not use this software to delay or replace care.</p></div>
+        </div>
+      </section>
+    </main>
 
     <footer>
-        <div class="team-info">
-            <p><b>21BIT0464 S. Navaneeth</b></p>
-            <p><b>Under Guide: Asis Kumar Tripathy sir</b></p>
-        </div>
+      <div><strong>DERMALENS</strong><span>Computer vision, responsibly presented.</span></div>
+      <p>Designed and engineered by <a href="https://github.com/Parthu-M">Majjiga Parthu</a></p>
     </footer>
-
-</body>
+  </body>
 </html>
