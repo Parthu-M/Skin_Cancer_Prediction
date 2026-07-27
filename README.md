@@ -15,9 +15,11 @@ Runtime.
 
 ## Live application
 
-The production service is fully configured in [`render.yaml`](render.yaml).
-A public URL will be listed here only after the deployment is connected and
-verified in the owner's Render account.
+**[Open the verified Dermalens deployment](https://parthu-dermalens.onrender.com)**
+
+The Render service deploys from `main` in the Singapore region. Its health
+endpoint, synthetic workflow, responsive layouts, and real ONNX inference were
+verified after the production release on July 27, 2026.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FParthu-M%2FSkin_Cancer_Prediction)
 
@@ -226,11 +228,10 @@ duplicating the model in memory.
 
 ### Render
 
-1. Create a Blueprint from this repository.
-2. Review the service in [`render.yaml`](render.yaml).
-3. Deploy the service.
-4. Verify `/health`, the synthetic sample, and an accepted dermoscopic image.
-5. Add the verified public URL to the GitHub repository and this README.
+The production service is available at
+<https://parthu-dermalens.onrender.com>. [`render.yaml`](render.yaml) provides
+the reproducible Blueprint definition, including the health check, runtime
+version, start command, and resource-safe inference settings.
 
 No API key, database, or secret environment variable is required.
 
