@@ -1,0 +1,326 @@
+{
+  "generated_at": "2026-07-27T17:25:14.001802+00:00",
+  "dataset": {
+    "name": "HAM10000",
+    "doi": "10.7910/DVN/DBW86T",
+    "license": "CC BY-NC 4.0",
+    "images": 10015,
+    "unique_lesions": 7470
+  },
+  "split": {
+    "train": {
+      "images": 6409,
+      "lesions": 4780,
+      "image_ids_sha256": "f37639cca40a04333020f88f0e0cd9081646c6a54fa581d94ad06c7f2f1db4d9",
+      "class_counts": {
+        "akiec": 209,
+        "bcc": 329,
+        "bkl": 703,
+        "df": 73,
+        "mel": 713,
+        "nv": 4291,
+        "vasc": 91
+      }
+    },
+    "validation": {
+      "images": 1602,
+      "lesions": 1195,
+      "image_ids_sha256": "4d795670abe6ded28da90435a48ac7eb5f80e78ea8fcf550166638935b322d6c",
+      "class_counts": {
+        "akiec": 52,
+        "bcc": 82,
+        "bkl": 176,
+        "df": 19,
+        "mel": 178,
+        "nv": 1073,
+        "vasc": 22
+      }
+    },
+    "test": {
+      "images": 2004,
+      "lesions": 1495,
+      "image_ids_sha256": "0b1ed8e0ab871d5527df2fe36d6d1a4700f83c516a518bd909773b14f3ae0d02",
+      "class_counts": {
+        "akiec": 66,
+        "bcc": 103,
+        "bkl": 220,
+        "df": 23,
+        "mel": 222,
+        "nv": 1341,
+        "vasc": 29
+      }
+    }
+  },
+  "model": {
+    "architecture": "MobileNetV3-Small",
+    "initialization": "TorchVision ImageNet-1K weights",
+    "input": "224x224 RGB dermoscopic image",
+    "parameters": 1525031,
+    "classes": [
+      {
+        "code": "akiec",
+        "name": "Actinic keratoses / intraepithelial carcinoma"
+      },
+      {
+        "code": "bcc",
+        "name": "Basal cell carcinoma"
+      },
+      {
+        "code": "bkl",
+        "name": "Benign keratosis-like lesions"
+      },
+      {
+        "code": "df",
+        "name": "Dermatofibroma"
+      },
+      {
+        "code": "mel",
+        "name": "Melanoma"
+      },
+      {
+        "code": "nv",
+        "name": "Melanocytic nevi"
+      },
+      {
+        "code": "vasc",
+        "name": "Vascular lesions"
+      }
+    ],
+    "temperature": 0.685,
+    "confidence_policy": {
+      "threshold": 0.35,
+      "coverage": 0.9875156054931336,
+      "selective_accuracy": 0.793299620733249
+    },
+    "onnx_max_absolute_difference": 1.3113021850585938e-05,
+    "onnx_bytes": 6109747
+  },
+  "validation": {
+    "accuracy": 0.7871410736579276,
+    "balanced_accuracy": 0.6700370830339064,
+    "macro_f1": 0.648106037968016,
+    "calibration_error_before": 0.12253603893570537,
+    "calibration_error_after": 0.022846198111735303
+  },
+  "test": {
+    "accuracy": 0.8003992015968064,
+    "balanced_accuracy": 0.6030651276433285,
+    "macro_f1": 0.6025692303189343,
+    "weighted_f1": 0.8007227973622922,
+    "log_loss": 0.59619140625,
+    "expected_calibration_error": 0.034263747894835335,
+    "selective": {
+      "coverage": 0.9860279441117764,
+      "accuracy": 0.8092105263157895
+    },
+    "per_class": {
+      "akiec": {
+        "precision": 0.49411764705882355,
+        "recall": 0.6363636363636364,
+        "f1-score": 0.5562913907284768,
+        "support": 66.0
+      },
+      "bcc": {
+        "precision": 0.711340206185567,
+        "recall": 0.6699029126213593,
+        "f1-score": 0.69,
+        "support": 103.0
+      },
+      "bkl": {
+        "precision": 0.6161137440758294,
+        "recall": 0.5909090909090909,
+        "f1-score": 0.6032482598607889,
+        "support": 220.0
+      },
+      "df": {
+        "precision": 0.36,
+        "recall": 0.391304347826087,
+        "f1-score": 0.375,
+        "support": 23.0
+      },
+      "mel": {
+        "precision": 0.502262443438914,
+        "recall": 0.5,
+        "f1-score": 0.5011286681715575,
+        "support": 222.0
+      },
+      "nv": {
+        "precision": 0.9150521609538003,
+        "recall": 0.9157345264727815,
+        "f1-score": 0.9153932165486396,
+        "support": 1341.0
+      },
+      "vasc": {
+        "precision": 0.6521739130434783,
+        "recall": 0.5172413793103449,
+        "f1-score": 0.5769230769230769,
+        "support": 29.0
+      },
+      "accuracy": 0.8003992015968064,
+      "macro avg": {
+        "precision": 0.6072943021080589,
+        "recall": 0.6030651276433285,
+        "f1-score": 0.6025692303189343,
+        "support": 2004.0
+      },
+      "weighted avg": {
+        "precision": 0.8019985446109901,
+        "recall": 0.8003992015968064,
+        "f1-score": 0.8007227973622922,
+        "support": 2004.0
+      }
+    },
+    "subgroups": {
+      "sex": {
+        "female": {
+          "support": 945,
+          "accuracy": 0.8084656084656084,
+          "balanced_accuracy": 0.5756985040741771
+        },
+        "male": {
+          "support": 1050,
+          "accuracy": 0.7933333333333333,
+          "balanced_accuracy": 0.621861697652425
+        }
+      },
+      "age_group": {
+        "40_to_59": {
+          "support": 902,
+          "accuracy": 0.8503325942350333,
+          "balanced_accuracy": 0.5504121339815607
+        },
+        "60_plus": {
+          "support": 723,
+          "accuracy": 0.7164591977869986,
+          "balanced_accuracy": 0.6258064622696938
+        },
+        "under_40": {
+          "support": 354,
+          "accuracy": 0.8502824858757062,
+          "balanced_accuracy": 0.7148073087563533
+        },
+        "<NA>": {
+          "support": 25,
+          "accuracy": 0.72,
+          "balanced_accuracy": 0.4296296296296296
+        }
+      }
+    }
+  },
+  "training": {
+    "seed": 42,
+    "history": [
+      {
+        "stage": "head",
+        "epoch": 1,
+        "duration_seconds": 76.1,
+        "train_loss": 1.5154,
+        "validation_balanced_accuracy": 0.4105,
+        "validation_macro_f1": 0.4076
+      },
+      {
+        "stage": "head",
+        "epoch": 2,
+        "duration_seconds": 71.0,
+        "train_loss": 1.3389,
+        "validation_balanced_accuracy": 0.5627,
+        "validation_macro_f1": 0.5157
+      },
+      {
+        "stage": "head",
+        "epoch": 3,
+        "duration_seconds": 72.6,
+        "train_loss": 1.2824,
+        "validation_balanced_accuracy": 0.542,
+        "validation_macro_f1": 0.5441
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 1,
+        "duration_seconds": 146.1,
+        "train_loss": 1.2203,
+        "validation_balanced_accuracy": 0.6007,
+        "validation_macro_f1": 0.6022
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 2,
+        "duration_seconds": 72.9,
+        "train_loss": 1.1463,
+        "validation_balanced_accuracy": 0.6313,
+        "validation_macro_f1": 0.6422
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 3,
+        "duration_seconds": 72.4,
+        "train_loss": 1.0966,
+        "validation_balanced_accuracy": 0.6523,
+        "validation_macro_f1": 0.6439
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 4,
+        "duration_seconds": 73.0,
+        "train_loss": 1.0564,
+        "validation_balanced_accuracy": 0.656,
+        "validation_macro_f1": 0.6148
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 5,
+        "duration_seconds": 74.4,
+        "train_loss": 1.0255,
+        "validation_balanced_accuracy": 0.67,
+        "validation_macro_f1": 0.6481
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 6,
+        "duration_seconds": 86.1,
+        "train_loss": 1.001,
+        "validation_balanced_accuracy": 0.6627,
+        "validation_macro_f1": 0.6492
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 7,
+        "duration_seconds": 97.8,
+        "train_loss": 0.9598,
+        "validation_balanced_accuracy": 0.6519,
+        "validation_macro_f1": 0.6312
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 8,
+        "duration_seconds": 98.7,
+        "train_loss": 0.9616,
+        "validation_balanced_accuracy": 0.6558,
+        "validation_macro_f1": 0.642
+      },
+      {
+        "stage": "fine_tune",
+        "epoch": 9,
+        "duration_seconds": 92.3,
+        "train_loss": 0.924,
+        "validation_balanced_accuracy": 0.654,
+        "validation_macro_f1": 0.6359
+      }
+    ],
+    "device": "cuda",
+    "python": "3.11.5",
+    "torch": "2.12.1+cu126",
+    "torchvision": "0.27.1+cu126",
+    "scikit_learn": "1.9.0",
+    "checkpoint_evaluation_only": true
+  },
+  "limitations": [
+    "Research use only; not a medical device or diagnosis.",
+    "Validated only on retrospective HAM10000 dermoscopic images.",
+    "Clinical photographs and other acquisition types are out of scope.",
+    "The closed seven-class taxonomy omits many skin conditions and cannot identify an unknown class.",
+    "Performance may not generalize across devices, sites, or populations.",
+    "Rare classes have substantially less training support.",
+    "Subgroup slices are descriptive and do not establish fairness."
+  ]
+}

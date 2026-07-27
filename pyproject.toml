@@ -5,7 +5,7 @@ pythonpath = ["."]
 
 [tool.coverage.run]
 branch = true
-source = ["app", "image_analysis"]
+source = ["app", "image_analysis", "model_runtime"]
 
 [tool.coverage.report]
 show_missing = true

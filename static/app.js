@@ -79,6 +79,47 @@ function createSyntheticSample() {
     context.stroke()
   }
 
+  context.strokeStyle = 'rgba(73, 29, 34, 0.34)'
+  context.lineWidth = 2
+  for (let index = 0; index < 42; index += 1) {
+    const angle = index * 2.399
+    const distance = 35 + (index % 9) * 11
+    const x = 350 + Math.cos(angle) * distance
+    const y = 230 + Math.sin(angle) * distance
+    context.beginPath()
+    context.moveTo(x - 5, y - 3)
+    context.lineTo(x + 6, y + 4)
+    context.stroke()
+  }
+
+  context.save()
+  context.beginPath()
+  context.arc(350, 230, 142, 0, Math.PI * 2)
+  context.clip()
+  context.strokeStyle = 'rgba(63, 29, 35, 0.28)'
+  context.lineWidth = 1
+  for (let offset = -132; offset <= 132; offset += 12) {
+    context.beginPath()
+    context.moveTo(218, 230 + offset)
+    context.lineTo(482, 230 + offset)
+    context.moveTo(350 + offset, 98)
+    context.lineTo(350 + offset, 362)
+    context.stroke()
+  }
+  for (let index = 0; index < 420; index += 1) {
+    const angle = index * 2.399
+    const distance = 12 + (index % 22) * 6
+    const x = 350 + Math.cos(angle) * distance
+    const y = 230 + Math.sin(angle) * distance
+    context.fillStyle = index % 3 === 0
+      ? 'rgba(246, 199, 175, 0.7)'
+      : 'rgba(53, 24, 31, 0.68)'
+    context.beginPath()
+    context.arc(x, y, 2 + (index % 3), 0, Math.PI * 2)
+    context.fill()
+  }
+  context.restore()
+
   canvas.toBlob((blob) => {
     if (!blob) return
     const file = new File([blob], 'synthetic-quality-sample.png', { type: 'image/png' })
@@ -117,6 +158,59 @@ function renderAnalysis(data) {
       return row
     }),
   )
+
+  const inference = data.inference
+  const status = document.querySelector('#inference-status')
+  const version = document.querySelector('#model-version')
+  const topEstimate = document.querySelector('#top-estimate')
+  const predictionList = document.querySelector('#prediction-list')
+  const explanation = document.querySelector('#inference-explanation')
+  predictionList.replaceChildren()
+
+  if (!inference.performed) {
+    status.textContent = 'Inference skipped'
+    status.className = 'skipped'
+    version.textContent = ''
+    topEstimate.hidden = true
+    explanation.textContent = inference.reason
+    return
+  }
+
+  const abstained = inference.status === 'abstained_low_confidence'
+  status.textContent = abstained ? 'Low confidence · abstained' : 'Research estimate'
+  status.className = abstained ? 'abstained' : 'estimated'
+  version.textContent = inference.model_version
+  topEstimate.hidden = false
+  document.querySelector('#prediction-name').textContent = inference.top_prediction.name
+  document.querySelector('#prediction-confidence').textContent =
+    `${Math.round(inference.top_prediction.probability * 100)}%`
+
+  predictionList.replaceChildren(
+    ...inference.ranked_predictions.map((prediction) => {
+      const row = document.createElement('div')
+      const heading = document.createElement('div')
+      const label = document.createElement('strong')
+      const value = document.createElement('span')
+      const track = document.createElement('div')
+      const bar = document.createElement('i')
+      const percentage = Math.round(prediction.probability * 100)
+      label.textContent = prediction.name
+      value.textContent = `${percentage}%`
+      heading.append(label, value)
+      track.setAttribute('role', 'progressbar')
+      track.setAttribute('aria-label', prediction.name)
+      track.setAttribute('aria-valuemin', '0')
+      track.setAttribute('aria-valuemax', '100')
+      track.setAttribute('aria-valuenow', String(percentage))
+      bar.style.width = `${percentage}%`
+      track.append(bar)
+      row.append(heading, track)
+      return row
+    }),
+  )
+  explanation.textContent = abstained
+    ? `The highest probability is below the ${(inference.confidence_threshold * 100).toFixed(0)}% validation-derived threshold. No class is accepted.`
+    : inference.acquisition_warning
 }
 
 input.addEventListener('change', () => setFile(input.files?.[0]))

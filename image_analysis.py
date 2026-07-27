@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from io import BytesIO
 from pathlib import PurePath
 from typing import Any, BinaryIO
@@ -22,18 +23,24 @@ class AnalysisError(ValueError):
     """Raised when an upload is not safe or useful for analysis."""
 
 
+@dataclass(frozen=True)
+class InspectedImage:
+    report: dict[str, Any]
+    image: Image.Image
+
+
 def _score(value: float, minimum: float, maximum: float) -> int:
     if maximum <= minimum:
         return 0
     return int(round(max(0, min(1, (value - minimum) / (maximum - minimum))) * 100))
 
 
-def analyze_image(
+def inspect_image(
     stream: BinaryIO,
     *,
     filename: str,
     declared_mime: str,
-) -> dict[str, Any]:
+) -> InspectedImage:
     if not filename or PurePath(filename).name != filename:
         raise AnalysisError("Use a simple image filename without folder paths.")
     if declared_mime not in ALLOWED_MIME:
@@ -119,27 +126,44 @@ def analyze_image(
     ]
     passed_count = sum(bool(check["passed"]) for check in checks)
 
-    return {
-        "readiness": (
-            "ready_for_research_pipeline"
-            if passed_count == len(checks)
-            else "review_recommended"
-        ),
-        "passed_checks": passed_count,
-        "total_checks": len(checks),
-        "file": {
-            "name": filename,
-            "format": actual_format,
-            "mime": declared_mime,
-            "size_bytes": len(content),
-            "width": width,
-            "height": height,
+    return InspectedImage(
+        image=image,
+        report={
+            "readiness": (
+                "ready_for_research_pipeline"
+                if passed_count == len(checks)
+                else "review_recommended"
+            ),
+            "passed_checks": passed_count,
+            "total_checks": len(checks),
+            "file": {
+                "name": filename,
+                "format": actual_format,
+                "mime": declared_mime,
+                "size_bytes": len(content),
+                "width": width,
+                "height": height,
+            },
+            "metrics": {
+                "brightness": _score(brightness, 0, 255),
+                "contrast": _score(contrast, 0, 90),
+                "edge_detail": _score(sharpness, 0, 35),
+                "average_rgb": [round(float(value), 1) for value in rgb_means],
+            },
+            "checks": checks,
         },
-        "metrics": {
-            "brightness": _score(brightness, 0, 255),
-            "contrast": _score(contrast, 0, 90),
-            "edge_detail": _score(sharpness, 0, 35),
-            "average_rgb": [round(float(value), 1) for value in rgb_means],
-        },
-        "checks": checks,
-    }
+    )
+
+
+def analyze_image(
+    stream: BinaryIO,
+    *,
+    filename: str,
+    declared_mime: str,
+) -> dict[str, Any]:
+    """Return the quality report without exposing the decoded image."""
+    return inspect_image(
+        stream,
+        filename=filename,
+        declared_mime=declared_mime,
+    ).report

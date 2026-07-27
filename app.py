@@ -8,7 +8,12 @@ from typing import Any
 from flask import Flask, jsonify, render_template, request
 from werkzeug.exceptions import HTTPException
 
-from image_analysis import AnalysisError, analyze_image
+from image_analysis import AnalysisError, inspect_image
+from model_runtime import (
+    ModelRuntimeError,
+    SkinLesionClassifier,
+    get_classifier,
+)
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO"),
@@ -16,40 +21,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger("dermalens")
 
-MODEL_CARD = {
-    "architecture": "Swin Transformer research pipeline",
-    "status": "weights_not_distributed",
-    "inference_enabled": False,
-    "input_shape": "224 × 224 RGB",
-    "classes": [
-        {"code": "akiec", "name": "Actinic keratoses"},
-        {"code": "bcc", "name": "Basal cell carcinoma"},
-        {"code": "bkl", "name": "Benign keratosis-like lesions"},
-        {"code": "df", "name": "Dermatofibroma"},
-        {"code": "mel", "name": "Melanoma"},
-        {"code": "nv", "name": "Melanocytic nevi"},
-        {"code": "vasc", "name": "Vascular lesions"},
-    ],
-    "intended_use": (
-        "Portfolio demonstration of a safe image intake and model-readiness workflow."
-    ),
-    "limitations": [
-        "The trained model weights are not present in this repository.",
-        "No diagnostic prediction is generated.",
-        (
-            "Image quality checks cannot determine whether a lesion "
-            "is benign or malignant."
-        ),
-    ],
-}
 
-
-def create_app(testing: bool = False) -> Flask:
+def create_app(
+    testing: bool = False,
+    classifier: SkinLesionClassifier | None = None,
+) -> Flask:
     app = Flask(__name__)
     app.config.update(
         TESTING=testing,
         MAX_CONTENT_LENGTH=8 * 1024 * 1024,
     )
+
+    def active_classifier() -> SkinLesionClassifier:
+        return classifier or get_classifier()
 
     @app.after_request
     def set_security_headers(response: Any) -> Any:
@@ -77,7 +61,10 @@ def create_app(testing: bool = False) -> Flask:
 
     @app.get("/")
     def index() -> str:
-        return render_template("index.html", model_card=MODEL_CARD)
+        return render_template(
+            "index.html",
+            model_card=active_classifier().card,
+        )
 
     @app.get("/robots.txt")
     def robots() -> Any:
@@ -85,12 +72,27 @@ def create_app(testing: bool = False) -> Flask:
 
     @app.get("/health")
     def health() -> tuple[Any, int]:
+        try:
+            model = active_classifier()
+        except ModelRuntimeError:
+            logger.exception("model_health_check_failed")
+            return (
+                jsonify(
+                    {
+                        "status": "unavailable",
+                        "service": "dermalens",
+                        "inference_enabled": False,
+                    }
+                ),
+                HTTPStatus.SERVICE_UNAVAILABLE,
+            )
         return (
             jsonify(
                 {
                     "status": "healthy",
                     "service": "dermalens",
-                    "inference_enabled": False,
+                    "inference_enabled": True,
+                    "model_version": model.config["artifact"]["version"],
                 }
             ),
             HTTPStatus.OK,
@@ -98,7 +100,7 @@ def create_app(testing: bool = False) -> Flask:
 
     @app.get("/api/model-card")
     def model_card() -> tuple[Any, int]:
-        return jsonify({"model": MODEL_CARD}), HTTPStatus.OK
+        return jsonify({"model": active_classifier().card}), HTTPStatus.OK
 
     @app.post("/api/analyze")
     def analyze() -> tuple[Any, int]:
@@ -115,33 +117,43 @@ def create_app(testing: bool = False) -> Flask:
             )
 
         try:
-            result = analyze_image(
+            inspected = inspect_image(
                 uploaded.stream,
                 filename=uploaded.filename or "",
                 declared_mime=uploaded.mimetype,
             )
+            result = inspected.report
+            if result["readiness"] == "ready_for_research_pipeline":
+                inference = active_classifier().predict(inspected.image)
+            else:
+                inference = {
+                    "performed": False,
+                    "status": "quality_gate_failed",
+                    "reason": (
+                        "Inference was skipped because one or more image "
+                        "quality checks require review."
+                    ),
+                }
             logger.info(
-                "image_analysis_completed format=%s size=%sx%s readiness=%s",
+                (
+                    "image_analysis_completed format=%s size=%sx%s "
+                    "readiness=%s inference_status=%s"
+                ),
                 result["file"]["format"],
                 result["file"]["width"],
                 result["file"]["height"],
                 result["readiness"],
+                inference["status"],
             )
             return (
                 jsonify(
                     {
                         "success": True,
                         "analysis": result,
-                        "inference": {
-                            "performed": False,
-                            "reason": (
-                                "Model weights are not distributed; no medical "
-                                "classification was generated."
-                            ),
-                        },
+                        "inference": inference,
                         "disclaimer": (
-                            "Research and portfolio demonstration only. "
-                            "This application does not provide medical advice."
+                            "Non-commercial research demonstration only. "
+                            "Model output is not a diagnosis or medical advice."
                         ),
                     }
                 ),
@@ -151,6 +163,17 @@ def create_app(testing: bool = False) -> Flask:
             return (
                 jsonify({"error": "invalid_image", "message": str(exc)}),
                 HTTPStatus.UNPROCESSABLE_ENTITY,
+            )
+        except ModelRuntimeError:
+            logger.exception("model_inference_failed")
+            return (
+                jsonify(
+                    {
+                        "error": "model_unavailable",
+                        "message": ("The research model is temporarily unavailable."),
+                    }
+                ),
+                HTTPStatus.SERVICE_UNAVAILABLE,
             )
 
     @app.errorhandler(HTTPStatus.REQUEST_ENTITY_TOO_LARGE)

@@ -1,0 +1,18 @@
+{
+  "name": "HAM10000",
+  "version": "Harvard Dataverse dataset version 4",
+  "doi": "10.7910/DVN/DBW86T",
+  "paper_doi": "10.1038/sdata.2018.161",
+  "isic_collection_id": 212,
+  "expected_images": 10015,
+  "license": "CC BY-NC 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "metadata_url": "https://dataverse.harvard.edu/api/access/datafile/4338392",
+  "images_source": "https://api.isic-archive.com/",
+  "notes": [
+    "Images are downloaded from the official ISIC Archive collection 212.",
+    "Labels and lesion identifiers come from the official Harvard Dataverse metadata.",
+    "Dataset images are never committed to this repository.",
+    "The dataset and derived model are restricted to non-commercial research use."
+  ]
+}
