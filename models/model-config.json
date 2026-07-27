@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "version": "ham10000-mnv3-v1",
+    "filename": "dermalens-ham10000-mobilenetv3.onnx",
+    "format": "ONNX",
+    "sha256": "0684299f03b0ceadf4f087a6f1929ad09b1d261a6e4010fdeca48f3c9e6bfb67",
+    "size_bytes": 6109747
+  },
+  "preprocessing": {
+    "resize_shorter_edge": 256,
+    "center_crop": 224,
+    "color_mode": "RGB",
+    "scale": "0..1",
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "standard_deviation": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "calibration": {
+    "method": "validation temperature scaling",
+    "temperature": 0.685,
+    "abstention_threshold": 0.35,
+    "validation_coverage": 0.9875156054931336,
+    "validation_selective_accuracy": 0.793299620733249
+  },
+  "classes": [
+    {
+      "code": "akiec",
+      "name": "Actinic keratoses / intraepithelial carcinoma"
+    },
+    {
+      "code": "bcc",
+      "name": "Basal cell carcinoma"
+    },
+    {
+      "code": "bkl",
+      "name": "Benign keratosis-like lesions"
+    },
+    {
+      "code": "df",
+      "name": "Dermatofibroma"
+    },
+    {
+      "code": "mel",
+      "name": "Melanoma"
+    },
+    {
+      "code": "nv",
+      "name": "Melanocytic nevi"
+    },
+    {
+      "code": "vasc",
+      "name": "Vascular lesions"
+    }
+  ],
+  "model_card": {
+    "name": "Dermalens HAM10000 MobileNetV3",
+    "architecture": "MobileNetV3-Small",
+    "status": "validated_research_model",
+    "inference_enabled": true,
+    "input_shape": "224 \u00d7 224 RGB",
+    "dataset": {
+      "name": "HAM10000",
+      "doi": "10.7910/DVN/DBW86T",
+      "license": "CC BY-NC 4.0",
+      "images": 10015,
+      "unique_lesions": 7470
+    },
+    "split": {
+      "train": {
+        "images": 6409,
+        "lesions": 4780
+      },
+      "validation": {
+        "images": 1602,
+        "lesions": 1195
+      },
+      "test": {
+        "images": 2004,
+        "lesions": 1495
+      }
+    },
+    "evaluation": {
+      "accuracy": 0.8003992015968064,
+      "balanced_accuracy": 0.6030651276433285,
+      "macro_f1": 0.6025692303189343,
+      "weighted_f1": 0.8007227973622922,
+      "expected_calibration_error": 0.034263747894835335,
+      "test_images": 2004
+    },
+    "classes": [
+      {
+        "code": "akiec",
+        "name": "Actinic keratoses / intraepithelial carcinoma"
+      },
+      {
+        "code": "bcc",
+        "name": "Basal cell carcinoma"
+      },
+      {
+        "code": "bkl",
+        "name": "Benign keratosis-like lesions"
+      },
+      {
+        "code": "df",
+        "name": "Dermatofibroma"
+      },
+      {
+        "code": "mel",
+        "name": "Melanoma"
+      },
+      {
+        "code": "nv",
+        "name": "Melanocytic nevi"
+      },
+      {
+        "code": "vasc",
+        "name": "Vascular lesions"
+      }
+    ],
+    "intended_use": "Non-commercial portfolio and machine-learning research demonstration on dermoscopic imagery.",
+    "limitations": [
+      "Research use only; not a medical device or diagnosis.",
+      "Validated only on retrospective HAM10000 dermoscopic images.",
+      "Clinical photographs and other acquisition types are out of scope.",
+      "The closed seven-class taxonomy omits many skin conditions and cannot identify an unknown class.",
+      "Performance may not generalize across devices, sites, or populations.",
+      "Rare classes have substantially less training support.",
+      "Subgroup slices are descriptive and do not establish fairness."
+    ],
+    "not_for": [
+      "Diagnosis, screening, triage, or treatment decisions",
+      "Clinical deployment or commercial use",
+      "Phone photographs or non-dermoscopic clinical images"
+    ]
+  }
+}

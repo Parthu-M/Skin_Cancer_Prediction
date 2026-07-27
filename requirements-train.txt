@@ -1,0 +1,10 @@
+torch==2.12.1
+torchvision==0.27.1
+pandas==2.3.3
+scikit-learn==1.9.0
+matplotlib==3.10.8
+seaborn==0.13.2
+onnx==1.20.1
+onnxscript==0.6.2
+onnxruntime==1.23.2
+Pillow==12.3.0

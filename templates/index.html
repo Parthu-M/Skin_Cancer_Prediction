@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A safe skin-lesion image readiness and machine-learning research workflow demonstration.">
+    <meta name="description" content="A privacy-first, quality-gated HAM10000 skin-lesion research classifier with calibrated ONNX inference.">
     <meta name="theme-color" content="#102a2b">
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
-    <title>Dermalens — ML image readiness lab</title>
+    <title>Dermalens — Responsible skin-lesion ML lab</title>
   </head>
   <body>
     <header class="site-header">
@@ -32,7 +32,8 @@
           <h1>Prepare the image.<br><em>Question the model.</em></h1>
           <p>
             A privacy-first workspace for validating skin-lesion imagery before
-            a research pipeline—without pretending an unavailable model can diagnose.
+            a calibrated HAM10000 research model—without presenting its output
+            as a diagnosis.
           </p>
           <div class="hero-actions">
             <a class="primary-button" href="#workspace">Analyze an image</a>
@@ -53,7 +54,7 @@
           <div class="visual-tag tag-three">Quality gate</div>
           <div class="scan-caption">
             <span>Input pipeline</span>
-            <strong>Input validated</strong>
+            <strong>Calibrated estimate</strong>
           </div>
         </div>
       </section>
@@ -61,8 +62,8 @@
       <section class="workspace-section" id="workspace" aria-labelledby="workspace-title">
         <div class="section-intro">
           <div>
-            <p class="eyebrow">Image readiness workspace</p>
-            <h2 id="workspace-title">Inspect before inference.</h2>
+            <p class="eyebrow">Quality-gated inference workspace</p>
+            <h2 id="workspace-title">Inspect, then estimate.</h2>
           </div>
           <p>Files are decoded in memory and discarded after analysis. No image is saved.</p>
         </div>
@@ -94,11 +95,11 @@
 
               <div class="consent-row">
                 <span aria-hidden="true">!</span>
-                <p><strong>Research use only.</strong> Do not upload identifying patient information.</p>
+                <p><strong>Dermoscopic research images only.</strong> Phone and clinical photographs are out of scope. Do not upload identifying information.</p>
               </div>
 
               <button id="analyze-button" class="submit-button" type="submit" disabled>
-                <span>Run readiness analysis</span><span aria-hidden="true">→</span>
+                <span>Run quality gate &amp; model</span><span aria-hidden="true">→</span>
               </button>
             </form>
           </section>
@@ -106,7 +107,7 @@
           <section class="results-card" aria-labelledby="results-title">
             <div class="card-heading">
               <span>02</span>
-              <div><h3 id="results-title">Quality report</h3><p>Resolution · exposure · contrast · detail</p></div>
+              <div><h3 id="results-title">Research report</h3><p>Quality gate · calibrated model output</p></div>
             </div>
 
             <div id="empty-results" class="empty-results">
@@ -114,12 +115,12 @@
                 <svg viewBox="0 0 24 24"><path d="M4 20V8l8-4 8 4v12M8 13h8M8 17h5"/></svg>
               </div>
               <h4>No report yet</h4>
-              <p>Choose an image to see model-readiness checks and measurable image characteristics.</p>
+              <p>Choose an image to see quality checks and, when accepted, a calibrated research estimate.</p>
             </div>
 
             <div id="loading-results" class="loading-results" hidden aria-live="polite">
               <div class="loader"></div>
-              <p>Decoding and measuring the image…</p>
+              <p>Validating the image and running the research model…</p>
             </div>
 
             <div id="analysis-results" class="analysis-results" hidden aria-live="polite">
@@ -133,9 +134,22 @@
                 <div><span>Contrast</span><strong id="contrast-metric">—</strong></div>
                 <div><span>Edge detail</span><strong id="edge-metric">—</strong></div>
               </div>
-              <div class="inference-note">
-                <span aria-hidden="true">i</span>
-                <p><strong>No classification performed.</strong> Model weights are not distributed in this repository.</p>
+              <div id="model-output" class="model-output">
+                <div class="inference-summary">
+                  <span id="inference-status">Waiting for model</span>
+                  <strong id="model-version"></strong>
+                </div>
+                <div id="top-estimate" class="top-estimate" hidden>
+                  <div>
+                    <span>Highest dataset similarity</span>
+                    <strong id="prediction-name">—</strong>
+                  </div>
+                  <b id="prediction-confidence">—</b>
+                </div>
+                <div id="prediction-list" class="prediction-list"></div>
+                <p id="inference-explanation">
+                  Quality checks must pass before inference runs.
+                </p>
               </div>
             </div>
 
@@ -154,23 +168,30 @@
             <h2 id="model-title">A research pipeline,<br>with its limits visible.</h2>
           </div>
           <p>
-            The original experiment targeted seven HAM10000 lesion categories with
-            a Swin Transformer. Its trained weights and reproducible evaluation were
-            not included, so production inference remains intentionally disabled.
+            {{ model_card.architecture }} was fine-tuned on {{ model_card.dataset.images }}
+            HAM10000 dermoscopic images with lesion-grouped partitions. The untouched
+            test results are published below; they do not establish clinical validity.
           </p>
+        </div>
+
+        <div class="model-evidence" aria-label="Model evaluation summary">
+          <div><strong>{{ "%.1f"|format(model_card.evaluation.accuracy * 100) }}%</strong><span>Test accuracy</span></div>
+          <div><strong>{{ "%.1f"|format(model_card.evaluation.balanced_accuracy * 100) }}%</strong><span>Balanced accuracy</span></div>
+          <div><strong>{{ "%.1f"|format(model_card.evaluation.macro_f1 * 100) }}%</strong><span>Macro-F1</span></div>
+          <div><strong>{{ model_card.evaluation.test_images }}</strong><span>Held-out images</span></div>
         </div>
 
         <div class="pipeline">
           <article><span>01</span><div class="pipeline-icon">IMG</div><h3>Validated intake</h3><p>Content type, dimensions, decoding, and upload size are checked before processing.</p></article>
-          <article><span>02</span><div class="pipeline-icon">224</div><h3>Model preparation</h3><p>The documented research architecture expects normalized 224 × 224 RGB input.</p></article>
-          <article class="disabled"><span>03</span><div class="pipeline-icon">OFF</div><h3>Inference disabled</h3><p>No weights means no honest prediction. The application never fabricates a result.</p></article>
+          <article><span>02</span><div class="pipeline-icon">224</div><h3>Versioned inference</h3><p>The image is normalized exactly as documented and evaluated by a checksummed ONNX artifact.</p></article>
+          <article><span>03</span><div class="pipeline-icon">CAL</div><h3>Calibrated output</h3><p>Temperature-scaled probabilities and a validation-derived threshold allow the model to abstain.</p></article>
         </div>
 
         <div class="taxonomy">
           <div>
-            <p class="eyebrow">Documented target taxonomy</p>
+            <p class="eyebrow">Model output taxonomy</p>
             <h3>Seven research labels</h3>
-            <p>Listed for model documentation only—not presented as a diagnosis.</p>
+            <p>Displayed as dataset-class similarity only—not presented as a diagnosis.</p>
           </div>
           <ul>
             {% for item in model_card.classes %}
