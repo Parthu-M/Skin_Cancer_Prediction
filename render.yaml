@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: dermalens-research-sandbox
+    name: parthu-dermalens
     runtime: python
     plan: free
     branch: main
