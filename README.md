@@ -13,27 +13,12 @@ Runtime.
 > not provide a diagnosis or medical advice. Do not use it for screening,
 > triage, treatment, or decisions about seeking care.
 
-## Live application
-
-The production service is fully configured in [`render.yaml`](render.yaml).
-A public URL will be listed here only after the deployment is connected and
-verified in the owner's Render account.
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FParthu-M%2FSkin_Cancer_Prediction)
-
 ## Product preview
 
 The interface includes a browser-generated synthetic sample, allowing the
 workflow to be demonstrated without shipping or hotlinking patient imagery.
 
 ![Dermalens desktop research workspace](assets/dermalens-desktop.png)
-
-<details>
-<summary>Mobile layout</summary>
-
-![Dermalens responsive mobile layout](assets/dermalens-mobile.png)
-
-</details>
 
 ## What it demonstrates
 
